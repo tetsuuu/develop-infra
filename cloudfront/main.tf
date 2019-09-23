@@ -1,11 +1,11 @@
 resource "aws_cloudfront_distribution" "s3_distribution_dev" {
-  enabled                        = true
-  aliases                        = ["dev-image.en-photo.net"]
-  http_version                   = "http2"
-  comment                        = "${var.service_name} ${var.environment} thumbnail"
-  is_ipv6_enabled                = true
-  price_class                    = "PriceClass_200"
-  wait_for_deployment            = true
+  enabled             = true
+  aliases             = ["dev-image.en-photo.net"]
+  http_version        = "http2"
+  comment             = "${var.service_name} ${var.environment} thumbnail"
+  is_ipv6_enabled     = true
+  price_class         = "PriceClass_200"
+  wait_for_deployment = true
 
   // customError 403
   custom_error_response {
@@ -36,11 +36,11 @@ resource "aws_cloudfront_distribution" "s3_distribution_dev" {
     viewer_protocol_policy = "redirect-to-https"
 
     forwarded_values {
-      query_string  = false
-      headers       = ["Origin"]
+      query_string = false
+      headers      = ["Origin"]
 
       cookies {
-        forward  = "none"
+        forward = "none"
       }
     }
   }
@@ -58,10 +58,10 @@ resource "aws_cloudfront_distribution" "s3_distribution_dev" {
     viewer_protocol_policy = "allow-all"
 
     forwarded_values {
-      query_string         = false
+      query_string = false
 
       cookies {
-        forward  = "none"
+        forward = "none"
       }
     }
   }
