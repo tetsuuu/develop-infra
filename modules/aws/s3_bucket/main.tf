@@ -1,9 +1,7 @@
 resource "aws_s3_bucket" "dev_s3_bucket" {
-  count         = length(var.dev_s3_bucket.buckets)
-  bucket        = "${var.service_name}-${var.short_env}-${values(var.dev_s3_bucket.buckets)[count.index].name}"
+  bucket        = var.bucket_name
   region        = "ap-northeast-1"
   request_payer = "BucketOwner"
-  policy        = file("./template/bucket_policy.json")
 
   cors_rule {
     allowed_headers = ["*"]
@@ -17,4 +15,17 @@ resource "aws_s3_bucket" "dev_s3_bucket" {
     Environment = "${var.environment}"
     Service     = "${var.service_name}"
   }
+}
+
+data "template_file" "dev_s3_bucket_policy" {
+  template = file("${path.module}/template/bucket_policy.json.tpl")
+
+  vars = {
+    resource_bucket = var.bucket_name
+  }
+}
+
+resource "aws_s3_bucket_policy" "dev_s3_bucket_policy" {
+  bucket = aws_s3_bucket.dev_s3_bucket.id
+  policy = data.template_file.dev_s3_bucket_policy.rendered
 }

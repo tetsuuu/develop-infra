@@ -1,56 +1,29 @@
-variable "service_name" {
-  default = "enphoto"
+module "k_doue" {
+  source = "../modules/aws/s3_bucket"
+  bucket_name = "enphoto-dev-doue"
 }
 
-variable "short_env" {
-  default = "dev"
+module "k_yoshida" {
+  source = "../modules/aws/s3_bucket"
+  bucket_name = "enphoto-dev-yoshida"
 }
 
-variable "environment" {
-  default = "develop"
+module "y_noda" {
+  source = "../modules/aws/s3_bucket"
+  bucket_name = "enphoto-dev-noda"
 }
 
-//variable "dev_s3_bucket" {
-//  default = {
-//    name = "dev_s3_bucket"
-//    buckets = {
-//      bucket1 = {
-//        name = "doue"
-//        arn  = "enphoto-dev-doue"
-//      }
-//      bucket2 = {
-//        name = "yoshida"
-//        arn  = "enphoto-dev-doue"
-//      }
-//      bucket3 = {
-//        name = "noda"
-//        arn  = "enphoto-dev-doue"
-//      }
-//      bucket4 = {
-//        name = "suzuki"
-//        arn  = "enphoto-dev-doue"
-//      }
-//      bucket5 = {
-//        name = "ohta"
-//        arn  = "enphoto-dev-doue"
-//      }
-//      bucket6 = {
-//        name = "ito"
-//        arn  = "enphoto-dev-doue"
-//      }
-//    }
-//  }
-//}
+module "k_suzuki" {
+  source = "../modules/aws/s3_bucket"
+  bucket_name = "enphoto-dev-suzuki"
+}
 
-locals {
-  s3_buckets = {
-    name = [
-      "enphoto-dev-doue",
-      "enphoto-dev-yoshida",
-      "enphoto-dev-noda",
-      "enphoto-dev-suzuki",
-      "enphoto-dev-ohta",
-      "enphoto-dev-ito"
-    ]
-  }
+module "h_ota" {
+  source = "../modules/aws/s3_bucket"
+  bucket_name = "enphoto-dev-ota"
+}
+
+module "d_ito" {
+  source = "../modules/aws/s3_bucket"
+  bucket_name = "enphoto-dev-ito"
 }

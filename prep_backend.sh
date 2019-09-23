@@ -2,7 +2,7 @@
 ## ACCOUNT = service name
 ## BUCKET = uluru-enphoto-infra-tfstate
 ## STAGE = develop or staging or production ( or sandbox )
-## e.g.) ../prep_backend.sh -a enphoto -b uluru-enphoto-infra-tfstate -p enphoto -s develop > terraform.tf
+## e.g.) ../prep_backend.sh -a enphoto -b uluru-enphoto-infra-tfstate -s develop > terraform.tf
 ## S3 PATH : s3://uluru-enphoto-infra-tfstate/terraform/enphoto/develop/terraform.tfstate
 
 init() {
