@@ -14,6 +14,7 @@ variable "password" {}
 variable "backup_window" {}
 variable "maintenance_window" {}
 variable "db_subnet_group" {}
+variable "target_vpc" {}
 variable "public_sub" {}
 variable "private_sub" {}
 

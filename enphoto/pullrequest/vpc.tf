@@ -1,5 +1,5 @@
 module "service_vpc" {
-  source = "../../modules/aws/vpc"
+  source = "../../modules/vpc"
 
   environment             = "staging"
   service_name            = var.service_name

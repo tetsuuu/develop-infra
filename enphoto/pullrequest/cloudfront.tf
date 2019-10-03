@@ -1,5 +1,5 @@
 module "s3_distribution_pr01" {
-  source = "../../modules/aws/cloudfront"
+  source = "../../modules/cloudfront"
 
   environment        = var.environment
   service_name       = var.service_name
@@ -12,7 +12,7 @@ module "s3_distribution_pr01" {
 }
 
 module "s3_distribution_pr02" {
-  source = "../../modules/aws/cloudfront"
+  source = "../../modules/cloudfront"
 
   environment        = var.environment
   service_name       = var.service_name
@@ -25,7 +25,7 @@ module "s3_distribution_pr02" {
 }
 
 module "s3_distribution_pr03" {
-  source = "../../modules/aws/cloudfront"
+  source = "../../modules/cloudfront"
 
   environment        = var.environment
   service_name       = var.service_name

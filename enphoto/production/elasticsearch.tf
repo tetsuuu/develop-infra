@@ -1,5 +1,5 @@
-module "log_aggregator" {
-  source = "../../modules/aws/elasticsearch"
+module "es_log_aggregator" {
+  source = "../../modules/elasticsearch"
 
   elasticsearch_version   = "7.1"
   instance_type           = "t2.small.elasticsearch"

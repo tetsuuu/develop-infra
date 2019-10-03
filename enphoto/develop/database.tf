@@ -1,5 +1,5 @@
 module "aws_db_instance" {
-  source = "../../modules/aws/database"
+  source = "../../modules/database"
 
   environment             = var.environment
   service_name            = var.service_name
@@ -19,4 +19,5 @@ module "aws_db_instance" {
   db_subnet_group         = "photo-dev-sub-db"
   private_sub             = module.service_vpc.private_subnets
   public_sub              = module.service_vpc.public_subnets
+  target_vpc              = module.service_vpc.vpc_id
 }

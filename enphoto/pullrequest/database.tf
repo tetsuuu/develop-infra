@@ -4,7 +4,7 @@
 //
 
 module "db_instance_pr01" {
-  source = "../../modules/aws/database"
+  source = "../../modules/database"
 
   environment             = var.environment
   service_name            = var.service_name
@@ -24,10 +24,11 @@ module "db_instance_pr01" {
   db_subnet_group         = "photo-test-sub-db"
   private_sub             = module.service_vpc.private_subnets
   public_sub              = module.service_vpc.public_subnets
+  target_vpc              = module.service_vpc.vpc_id
 }
 
 module "db_instance_pr02" {
-  source = "../../modules/aws/database"
+  source = "../../modules/database"
 
   environment             = var.environment
   service_name            = var.service_name
@@ -47,10 +48,11 @@ module "db_instance_pr02" {
   db_subnet_group         = "photo-test-sub-db"
   private_sub             = module.service_vpc.private_subnets
   public_sub              = module.service_vpc.public_subnets
+  target_vpc              = module.service_vpc.vpc_id
 }
 
 module "db_instance_pr03" {
-  source = "../../modules/aws/database"
+  source = "../../modules/database"
 
   environment             = var.environment
   service_name            = var.service_name
@@ -70,4 +72,5 @@ module "db_instance_pr03" {
   db_subnet_group         = "photo-test-sub-db"
   private_sub             = module.service_vpc.private_subnets
   public_sub              = module.service_vpc.public_subnets
+  target_vpc              = module.service_vpc.vpc_id
 }

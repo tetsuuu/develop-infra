@@ -34,16 +34,13 @@ resource "aws_db_subnet_group" "service_db" {
 
   tags = {
     Name         = "${var.service_name}-${var.environment}"
-    Envvironment = "${var.environment}"
-    Service      = "${var.service_name}"
+    Envvironment = var.environment
+    Service      = var.service_name
   }
 }
 
-variable "target_vpc" {
-  default = ""
-}
 resource "aws_security_group" "service_db_sg" {
-  vpc_id      = "${var.target_vpc}"
+  vpc_id      = var.target_vpc
   name        = "${var.service_name}-${var.short_env}-rds"
   description = "${var.service_name} ${var.environment} RDS Security Group"
 

@@ -1,5 +1,5 @@
 module "s3_distribution_thumbnail" {
-  source = "../../modules/aws/cloudfront"
+  source = "../../modules/cloudfront"
 
   environment        = var.environment
   service_name       = var.service_name

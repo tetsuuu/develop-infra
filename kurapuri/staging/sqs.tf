@@ -1,5 +1,5 @@
 module "sqs" {
-  source = "../../modules/aws/sqs"
+  source = "../../modules/sqs"
 
   environment  = var.environment
   service_name = var.service_name

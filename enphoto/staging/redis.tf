@@ -1,5 +1,5 @@
 module "elasticache_redis" {
-  source = "../../modules/aws/redis"
+  source = "../../modules/redis"
 
   engine_version = "3.2.4"
   environment    = var.environment
