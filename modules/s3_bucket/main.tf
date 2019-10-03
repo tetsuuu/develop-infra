@@ -22,10 +22,11 @@ data "template_file" "s3_bucket_policy" {
 
   vars = {
     resource_bucket = var.bucket_name
+    cdn_identity    = var.access_identity
   }
 }
 
-resource "aws_s3_bucket_policy" "dev_s3_bucket_policy" {
+resource "aws_s3_bucket_policy" "s3_bucket_policy" {
   bucket = aws_s3_bucket.s3_bucket.id
   policy = data.template_file.s3_bucket_policy.rendered
 }
