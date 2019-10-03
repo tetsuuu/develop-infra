@@ -18,8 +18,6 @@ variable "state_bucket" {
   default = "uluru-enphoto-infra-tfstate"
 }
 
-variable "service_vpc" {}
-
 variable "maintenance_cidr_blocks" {
   type = "list"
   default = [

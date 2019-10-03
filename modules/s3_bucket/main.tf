@@ -10,6 +10,11 @@ resource "aws_s3_bucket" "s3_bucket" {
     max_age_seconds = 3000
   }
 
+  website {
+      error_document = "error.html"
+      index_document = "index.html"
+  }
+
   tags = {
     Name        = "${var.service_name}-${var.short_env}-bucket"
     Environment = var.environment
@@ -26,7 +31,7 @@ data "template_file" "s3_bucket_policy" {
   }
 }
 
-resource "aws_s3_bucket_policy" "s3_bucket_policy" {
+resource "aws_s3_bucket_policy" "s3_bucket" {
   bucket = aws_s3_bucket.s3_bucket.id
   policy = data.template_file.s3_bucket_policy.rendered
 }

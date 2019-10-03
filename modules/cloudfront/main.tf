@@ -1,9 +1,9 @@
-resource "aws_cloudfront_distribution" "s3_distribution" {
+resource "aws_cloudfront_distribution" "s3_image" {
   enabled             = true
   http_version        = "http2"
   is_ipv6_enabled     = true
   comment             = "${var.service_name} ${var.environment} thumbnail"
-  aliases             = ["${var.domin_aliases}.${lookup(local.${var.service_name}, delegate_domain)}"]
+  aliases             = ["${var.domin_aliases}.${lookup(local.delegate_domain, var.service_name)}"]
   wait_for_deployment = true
   price_class         = "PriceClass_200"
 
@@ -63,7 +63,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   }
 
   viewer_certificate {
-    acm_certificate_arn            = "${lookup(local.${var.service_name}, acm_arn)}"
+    acm_certificate_arn            = "${lookup(local.acm_arn, var.service_name)}"
     cloudfront_default_certificate = false
     iam_certificate_id             = ""
     minimum_protocol_version       = "TLSv1"
@@ -78,14 +78,14 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 }
 
 data "aws_route53_zone" "root_zone" {
-  name = "${lookup(local.${var.service_name}, delegate_domain)}."
+  name = "${lookup(local.delegate_domain, var.service_name)}."
 }
 
-resource "aws_route53_record" "cdn_record" {
-  depends_on = ["aws_cloudfront_distribution.s3_distribution"]
+resource "aws_route53_record" "s3_image" {
+  depends_on = ["aws_cloudfront_distribution.s3_image"]
   zone_id = data.aws_route53_zone.root_zone.zone_id
   name    = var.domin_aliases
   type    = "CNAME"
   ttl     = "300"
-  records = [aws_cloudfront_distribution.s3_distribution.domain_name]
+  records = [aws_cloudfront_distribution.s3_image.domain_name]
 }

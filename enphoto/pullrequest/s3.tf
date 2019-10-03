@@ -3,6 +3,9 @@ module "s3_distribution_pr01" {
 
   bucket_name     = "enphoto-pr01"
   access_identity = "EQH4KPLGLS6Q5"
+  environment     = var.environment
+  service_name    = var.service_name
+  short_env       = var.short_env
 }
 
 module "s3_distribution_pr02" {
@@ -10,6 +13,9 @@ module "s3_distribution_pr02" {
 
   bucket_name     = "enphoto-pr02"
   access_identity = "EQH4KPLGLS6Q5"
+  environment     = var.environment
+  service_name    = var.service_name
+  short_env       = var.short_env
 }
 
 module "s3_distribution_pr03" {
@@ -17,4 +23,7 @@ module "s3_distribution_pr03" {
 
   bucket_name     = "enphoto-pr03"
   access_identity = "EQH4KPLGLS6Q5"
+  environment     = var.environment
+  service_name    = var.service_name
+  short_env       = var.short_env
 }

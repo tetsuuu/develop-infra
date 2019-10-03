@@ -3,4 +3,7 @@ module "s3_distribution_production" {
 
   bucket_name     = "enphoto-prod"
   access_identity = "EAKHBYYMLOWYU"
+  environment     = var.environment
+  service_name    = var.service_name
+  short_env       = var.short_env
 }

@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
-    bucket  = var.state_bucket
-    key     = "infra/${var.environment}/terraform.tfstate"
-    region  = var.region
+    bucket  = "uluru-kurapuri-infra-tfstate"
+    key     = "infra/production/terraform.tfstate"
+    region  = "ap-northeast-1"
   }
 }

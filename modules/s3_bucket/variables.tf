@@ -1,14 +1,6 @@
-variable "service_name" {
-  default = "enphoto"
-}
-
-variable "short_env" {
-  default = "dev"
-}
-
-variable "environment" {
-  default = "develop"
-}
+variable "service_name" {}
+variable "short_env" {}
+variable "environment" {}
 
 variable "bucket_name" {}
 variable "access_identity" {}
