@@ -89,7 +89,7 @@ module "r_fukuda_cf" {
   access_identity    = "E3OIC1NJRUT25W"
 }
 
-module "s_yamamoto_cf" {
+module "t_yamamoto_cf" {
   source = "../../modules/cloudfront"
 
   environment        = var.environment

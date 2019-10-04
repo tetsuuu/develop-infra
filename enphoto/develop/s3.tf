@@ -68,7 +68,7 @@ module "r_fukuda_s3" {
   short_env       = var.short_env
 }
 
-module "s_yamamoto_s3" {
+module "t_yamamoto_s3" {
   source = "../../modules/s3_bucket"
 
   bucket_name     = "enphoto-dev-yamamoto"

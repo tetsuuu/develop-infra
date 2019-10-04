@@ -29,4 +29,3 @@ variable "maintenance_cidr_blocks" {
 variable "delegate_domain" {
   default = "en-photo.net"
 }
-

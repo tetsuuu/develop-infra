@@ -63,7 +63,7 @@ resource "aws_cloudfront_distribution" "s3_image" {
   }
 
   viewer_certificate {
-    acm_certificate_arn            = "${lookup(local.acm_arn, var.service_name)}"
+    acm_certificate_arn            = lookup(local.acm_arn, var.service_name)
     cloudfront_default_certificate = false
     iam_certificate_id             = ""
     minimum_protocol_version       = "TLSv1"
