@@ -1,25 +1,25 @@
 resource "aws_db_instance" "service_db" {
-  identifier                   = "${var.service_name}-${var.short_env}-db"
-  allocated_storage            = var.storage
-  max_allocated_storage        = var.max_storage
-  storage_type                 = "gp2"
-  engine                       = var.engine
-  engine_version               = var.engine_version
-  instance_class               = var.instance_class
-  name                         = var.name
-  username                     = var.user
-  password                     = var.password
-  db_subnet_group_name         = aws_db_subnet_group.service_db.name
-  publicly_accessible          = var.environment == "develop" ? true : false
-  port                         = 3306
-  parameter_group_name         = lookup(local.parameter_group, var.service_name)
-  option_group_name            = lookup(local.option_group, var.service_name)
-  backup_retention_period      = 7
-  backup_window                = var.backup_window
-  maintenance_window           = var.maintenance_window
-  deletion_protection          = var.environment == "production || staging" ? false : true
-  auto_minor_version_upgrade   = false
-  apply_immediately            = true
+  identifier                      = "${var.service_name}-${var.short_env}-db"
+  allocated_storage               = var.storage
+  max_allocated_storage           = var.max_storage
+  storage_type                    = "gp2"
+  engine                          = var.engine
+  engine_version                  = var.engine_version
+  instance_class                  = var.instance_class
+  name                            = var.name
+  username                        = var.user
+  password                        = var.password
+  db_subnet_group_name            = aws_db_subnet_group.service_db.name
+  publicly_accessible             = var.environment == "develop" ? true : false
+  port                            = 3306
+  parameter_group_name            = lookup(local.parameter_group, var.service_name)
+  option_group_name               = lookup(local.option_group, var.service_name)
+  backup_retention_period         = 7
+  backup_window                   = var.backup_window
+  maintenance_window              = var.maintenance_window
+  deletion_protection             = var.environment == "production || staging" ? false : true
+  auto_minor_version_upgrade      = false
+  apply_immediately               = true
   enabled_cloudwatch_logs_exports = lookup(local.log_level, var.service_name)
   //performance_insights_enabled = true
 
