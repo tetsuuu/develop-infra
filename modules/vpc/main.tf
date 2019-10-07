@@ -1,5 +1,5 @@
 resource "aws_vpc" "service_vpc" {
-  cidr_block           = lookup(local.vpc_cidr_blocks, default)
+  cidr_block           = lookup(local.vpc_cidr_blocks, "default")
   enable_dns_hostnames = true
   enable_dns_support   = true
   instance_tenancy     = "default"
@@ -12,30 +12,30 @@ resource "aws_vpc" "service_vpc" {
 }
 
 resource "aws_subnet" "public" {
-  count                   = length(split(",", lookup(local.availability_zones, default)))
+  count                   = length(split(",", lookup(local.availability_zones, "default")))
   vpc_id                  = aws_vpc.service_vpc.id
-  cidr_block              = cidrsubnet(aws_vpc.service_vpc.cidr_block, 4, count.index + length(split(",", lookup(local.availability_zones, default))) * 0)
-  availability_zone       = split(",", lookup(local.availability_zones, default))[count.index]
+  cidr_block              = cidrsubnet(aws_vpc.service_vpc.cidr_block, 4, count.index + length(split(",", lookup(local.availability_zones, "default"))) * 0)
+  availability_zone       = split(",", lookup(local.availability_zones, "default"))[count.index]
   map_public_ip_on_launch = true
   depends_on              = ["aws_vpc.service_vpc"]
 
   tags = {
-    Name         = "${var.service_name}-${var.short_env}-public-${count.index}"
+    Name         = "${var.service_name}-${var.short_env}-sub-public-${count.index}"
     Envvironment = var.environment
     Service      = var.service_name
   }
 }
 
 resource "aws_subnet" "private" {
-  count                   = length(split(",", lookup(local.availability_zones, default)))
+  count                   = length(split(",", lookup(local.availability_zones, "default")))
   vpc_id                  = aws_vpc.service_vpc.id
-  cidr_block              = cidrsubnet(aws_vpc.service_vpc.cidr_block, 4, count.index + length(split(",", lookup(local.availability_zones, default))) * 1)
-  availability_zone       = split(",", lookup(local.availability_zones, default))[count.index]
+  cidr_block              = cidrsubnet(aws_vpc.service_vpc.cidr_block, 4, count.index + length(split(",", lookup(local.availability_zones, "default"))) * 1)
+  availability_zone       = split(",", lookup(local.availability_zones, "default"))[count.index]
   map_public_ip_on_launch = false
   depends_on              = ["aws_vpc.service_vpc"]
 
   tags = {
-    Name         = "${var.service_name}-${var.short_env}-private-${count.index}"
+    Name         = "${var.service_name}-${var.short_env}-sub-private-${count.index}"
     Envvironment = var.environment
     Service      = var.service_name
   }
@@ -51,8 +51,23 @@ resource "aws_internet_gateway" "igw" {
   }
 }
 
+resource "aws_route_table" "default" {
+  vpc_id = aws_vpc.service_vpc.id
+
+  tags = {
+    Name         = "${var.service_name}-${var.short_env}-default"
+    Envvironment = var.environment
+    Service      = var.service_name
+  }
+}
+
+resource "aws_route" "default" {
+  route_table_id         = aws_route_table.default.id
+  destination_cidr_block = "172.31.0.0/16"
+  gateway_id             = "local"
+}
+
 resource "aws_route_table" "public" {
-  count  = length(split(",", lookup(local.availability_zones, default)))
   vpc_id = aws_vpc.service_vpc.id
 
   route {
@@ -61,62 +76,93 @@ resource "aws_route_table" "public" {
   }
 
   tags = {
-    Name         = "${var.service_name}-${var.short_env}-route-public"
+    Name         = "${var.service_name}-${var.short_env}-public"
     Envvironment = var.environment
     Service      = var.service_name
   }
 }
 
 resource "aws_route_table" "private" {
-  count  = length(split(",", lookup(local.availability_zones, default)))
   vpc_id = aws_vpc.service_vpc.id
 
   tags = {
-    Name         = "${var.service_name}-${var.short_env}-route-private-${count.index}"
+    Name         = "${var.service_name}-${var.short_env}-private"
+    Envvironment = var.environment
+    Service      = var.service_name
+  }
+}
+
+resource "aws_vpc_endpoint" "s3" {
+  depends_on      = ["aws_route_table.private"]
+  vpc_id          = aws_vpc.service_vpc.id
+  service_name    = "com.amazonaws.ap-northeast-1.s3"
+  route_table_ids = [aws_route_table.private.id]
+
+  tags = {
+    Name         = "${var.service_name}-${var.short_env}-s3-endpoint"
     Envvironment = var.environment
     Service      = var.service_name
   }
 }
 
 resource "aws_route_table_association" "public" {
-  count          = length(split(",", lookup(local.availability_zones, default)))
+  count          = length(split(",", lookup(local.availability_zones, "default")))
   depends_on     = ["aws_route_table.public", "aws_subnet.public"]
-  route_table_id = aws_route_table.public.*.id[count.index]
+  route_table_id = aws_route_table.public.id
   subnet_id      = aws_subnet.public.*.id[count.index]
 }
 
 resource "aws_route_table_association" "private" {
-  count          = length(split(",", lookup(local.availability_zones, default)))
+  count          = length(split(",", lookup(local.availability_zones, "default")))
   depends_on     = ["aws_route_table.private", "aws_subnet.private"]
-  route_table_id = aws_route_table.private.*.id[count.index]
+  route_table_id = aws_route_table.private.id
   subnet_id      = aws_subnet.private.*.id[count.index]
 }
 
 resource "aws_security_group" "default" {
-  name        = "${var.service_name}-${var.short_env}-default"
-  description = "${var.service_name}-${var.short_env}-default"
+  name        = "default"
+  description = "default VPC security group"
   vpc_id      = aws_vpc.service_vpc.id
 
   egress {
-    from_port       = 0
-    to_port         = 0
-    protocol        = "-1"
-    cidr_blocks     = ["0.0.0.0/0"]
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
-  ingress {
-    from_port       = 80
-    to_port         = 80
-    protocol        = "tcp"
-    cidr_blocks     = var.maintenance_cidr_blocks
-  }
+  ingress     = [
+    {
+      cidr_blocks      = []
+      description      = ""
+      from_port        = 0
+      ipv6_cidr_blocks = []
+      prefix_list_ids  = []
+      protocol         = "-1"
+      security_groups  = []
+      self             = true
+      to_port          = 0
+    },
+    {
+      cidr_blocks      = [aws_vpc.service_vpc.cidr_block]
+      description      = ""
+      from_port        = 80
+      ipv6_cidr_blocks = []
+      prefix_list_ids  = []
+      protocol         = "tcp"
+      security_groups  = []
+      self             = false
+      to_port          = 80
+    },
+  ]
 
   tags = {
-    Name         = "${var.service_name}-${var.short_env}-admintools"
+    Name         = "${var.service_name}-${var.short_env}-default"
     Envvironment = var.environment
     Service      = var.service_name
   }
 }
+
 
 resource "aws_security_group_rule" "default" {
   depends_on        = ["aws_security_group.default"]
@@ -124,7 +170,7 @@ resource "aws_security_group_rule" "default" {
   from_port         = 3306
   to_port           = 3306
   protocol          = "tcp"
-  cidr_blocks       = var.maintenance_cidr_blocks
+  cidr_blocks       = [aws_vpc.service_vpc.cidr_block]
   security_group_id = aws_security_group.default.id
 }
 
@@ -135,17 +181,17 @@ resource "aws_security_group" "admintools" {
   vpc_id      = aws_vpc.service_vpc.id
 
   egress {
-    from_port       = 0
-    to_port         = 0
-    protocol        = "-1"
-    cidr_blocks     = ["0.0.0.0/0"]
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
-    from_port       = 80
-    to_port         = 80
-    protocol        = "tcp"
-    cidr_blocks     = var.maintenance_cidr_blocks
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = var.maintenance_cidr_blocks
   }
 
   tags = {
@@ -163,45 +209,7 @@ resource "aws_security_group_rule" "admintools_443_ingress" {
   to_port           = 443
   protocol          = "tcp"
   cidr_blocks       = var.maintenance_cidr_blocks
-  security_group_id = aws_security_group.admintools.id
-}
-
-resource "aws_security_group" "adminer" {
-  count       = var.environment == "staging || production" ? 1 : 0 //TODO
-  name        = "${var.service_name}-${var.short_env}-adminer"
-  description = "${var.service_name}-${var.short_env}-adminer"
-  vpc_id      = aws_vpc.service_vpc.id
-
-  egress {
-    from_port       = 0
-    to_port         = 0
-    protocol        = "-1"
-    cidr_blocks     = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port       = 22
-    to_port         = 22
-    protocol        = "tcp"
-    cidr_blocks     = ["39.110.205.167/32"]
-  }
-
-  tags = {
-    Name         = "${var.service_name}-${var.short_env}-adminer"
-    Envvironment = var.environment
-    Service      = var.service_name
-  }
-}
-
-resource "aws_security_group_rule" "adminer_80_ingress" {
-  count             = var.environment == "staging || production" ? 1 : 0 //TODO
-  depends_on        = ["aws_security_group.adminer"]
-  type              = "ingress"
-  from_port         = 80
-  to_port           = 80
-  protocol          = "tcp"
-  cidr_blocks       = ["118.103.95.42/32, 39.110.205.167/32, 114.160.214.15/32"]
-  security_group_id = aws_security_group.adminer.id
+  security_group_id = aws_security_group.admintools[count.index]
 }
 
 /* TODO arrenge later
