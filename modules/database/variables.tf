@@ -19,16 +19,18 @@ variable "public_sub" {}
 variable "private_sub" {}
 
 locals {
-  enphoto = {
-    "develop"     = "default.mysql5.7"
-    "pullrequest" = "default.mysql5.7"
-    "staging"     = "default.mysql5.7"
-    "production"  = "enphoto-prod-rds-mysql"
+  parameter_group = {
+    "enphoto"  = var.environment == "prodction" ? "enphoto-prod-rds-mysql" : "default.mysql5.7"
+    "kurapuri" = var.environment == "prodction" ? "kurapuri-prod-rds-mysql" : "default.mysql5.7"
   }
 
-  kurapuri = {
-    "develop"    = "default.mysql5.7"  //kurapuri dev has never been existing.
-    "staging"    = "default.mysql5.7"
-    "production" = "kurapuri-prod-rds-mysql"
+  option_group = {
+    "enphoto"  = var.environment == "prodction" ? "enphoto-prod-rds-mysql" : "default:mysql-5-7"
+    "kurapuri" = var.environment == "prodction" ? "kurapuri-prod-rds-mysql" : "default:mysql-5-7"
+  }
+
+  log_level = {
+    "enphoto"  = var.environment == "prodction" ? ["audit", "error", "general", "slowquery"] : ["error"]
+    "kurapuri" = var.environment == "prodction" ? ["audit", "error", "general", "slowquery"] : ["error"]
   }
 }

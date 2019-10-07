@@ -1,4 +1,4 @@
-resource "aws_db_instance" "service-db" {
+resource "aws_db_instance" "service_db" {
   identifier                   = "${var.service_name}-${var.short_env}-db"
   allocated_storage            = var.storage
   max_allocated_storage        = var.max_storage
@@ -10,14 +10,17 @@ resource "aws_db_instance" "service-db" {
   username                     = var.user
   password                     = var.password
   db_subnet_group_name         = aws_db_subnet_group.service_db.name
+  publicly_accessible          = var.environment == "develop" ? true : false
   port                         = 3306
-  parameter_group_name         = "${lookup(local.${var.service_name}, ${var.environment})}"
+  parameter_group_name         = lookup(local.parameter_group, var.service_name)
+  option_group_name            = lookup(local.option_group, var.service_name)
   backup_retention_period      = 7
   backup_window                = var.backup_window
   maintenance_window           = var.maintenance_window
-  deletion_protection          = var.environment == "develop" ? false : true
+  deletion_protection          = var.environment == "production || staging" ? false : true
   auto_minor_version_upgrade   = false
   apply_immediately            = true
+  enabled_cloudwatch_logs_exports = lookup(local.log_level, var.service_name)
   //performance_insights_enabled = true
 
   tags = {
@@ -39,7 +42,7 @@ resource "aws_db_subnet_group" "service_db" {
   }
 }
 
-resource "aws_security_group" "service_db_sg" {
+resource "aws_security_group" "service_db" {
   vpc_id      = var.target_vpc
   name        = "${var.service_name}-${var.short_env}-rds"
   description = "${var.service_name} ${var.environment} RDS Security Group"
@@ -66,13 +69,14 @@ resource "aws_security_group" "service_db_sg" {
 }
 
 // ingress from local for develop
-resource "aws_security_group_rule" "admin-ingress" {
+resource "aws_security_group_rule" "service_db" {
   count             = var.environment == "develop" ? 1 : 0
   depends_on        = ["aws_security_group.service-db-sg"]
+  description       = "Local access allow for ${var.service_name} ${var.environment} developer"
   type              = "ingress"
   from_port         = 3306
   to_port           = 3306
   protocol          = "tcp"
   cidr_blocks       = var.maintenance_cidr_blocks
-  security_group_id = aws_security_group.service_db_sg.id
+  security_group_id = aws_security_group.service_db.id
 }

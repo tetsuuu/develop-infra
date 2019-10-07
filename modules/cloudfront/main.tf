@@ -9,7 +9,7 @@ resource "aws_cloudfront_distribution" "s3_image" {
 
   // customError 403
   custom_error_response {
-    error_caching_min_ttl = 5
+    error_caching_min_ttl = 5  //1
     error_code            = 403
     response_code         = 404
     response_page_path    = "/nophoto.png"
@@ -17,7 +17,7 @@ resource "aws_cloudfront_distribution" "s3_image" {
 
   // customError 404
   custom_error_response {
-    error_caching_min_ttl = 5
+    error_caching_min_ttl = 5  //1
     error_code            = 404
     response_code         = 404
     response_page_path    = "/nophoto.png"
