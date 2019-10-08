@@ -17,6 +17,9 @@ variable "db_subnet_group" {}
 variable "target_vpc" {}
 variable "public_sub" {}
 variable "private_sub" {}
+variable "vpc_cidr_block" {}
+variable "sg_description" {}
+variable "db_identifier" {}
 
 locals {
   parameter_group = {
@@ -32,5 +35,9 @@ locals {
   log_level = {
     "enphoto"  = var.environment == "prodction" ? ["audit", "error", "general", "slowquery"] : ["error"]
     "kurapuri" = var.environment == "prodction" ? ["audit", "error", "general", "slowquery"] : ["error"]
+  }
+
+  developers_ips = {
+    "default"  = ["39.110.205.167/32", "118.103.95.42/32", "106.72.0.33/32", "182.250.243.17/32", "220.247.1.211/32"]
   }
 }

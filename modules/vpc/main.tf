@@ -146,6 +146,17 @@ resource "aws_security_group" "default" {
     {
       cidr_blocks      = [aws_vpc.service_vpc.cidr_block]
       description      = ""
+      from_port        = 3306
+      ipv6_cidr_blocks = []
+      prefix_list_ids  = []
+      protocol         = "tcp"
+      security_groups  = []
+      self             = false
+      to_port          = 3306
+    },
+    {
+      cidr_blocks      = [aws_vpc.service_vpc.cidr_block]
+      description      = ""
       from_port        = 80
       ipv6_cidr_blocks = []
       prefix_list_ids  = []
@@ -153,7 +164,7 @@ resource "aws_security_group" "default" {
       security_groups  = []
       self             = false
       to_port          = 80
-    },
+    }
   ]
 
   tags = {
@@ -164,15 +175,15 @@ resource "aws_security_group" "default" {
 }
 
 
-resource "aws_security_group_rule" "default" {
-  depends_on        = ["aws_security_group.default"]
-  type              = "ingress"
-  from_port         = 3306
-  to_port           = 3306
-  protocol          = "tcp"
-  cidr_blocks       = [aws_vpc.service_vpc.cidr_block]
-  security_group_id = aws_security_group.default.id
-}
+//resource "aws_security_group_rule" "default-3" {
+//  depends_on        = ["aws_security_group.default"]
+//  type              = "ingress"
+//  from_port         = 80
+//  to_port           = 80
+//  protocol          = "tcp"
+//  cidr_blocks       = [aws_vpc.service_vpc.cidr_block]
+//  security_group_id = aws_security_group.default.id
+//}
 
 resource "aws_security_group" "admintools" {
   count       = var.environment == "production" ? 1 : 0

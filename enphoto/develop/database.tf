@@ -1,6 +1,7 @@
 module "aws_db_instance" {
   source = "../../modules/database"
 
+  db_identifier           = "enphoto-dev-mysql57"
   environment             = var.environment
   service_name            = var.service_name
   short_env               = var.short_env
@@ -20,4 +21,6 @@ module "aws_db_instance" {
   private_sub             = module.service_vpc.private_subnets
   public_sub              = module.service_vpc.public_subnets
   target_vpc              = module.service_vpc.vpc_id
+  vpc_cidr_block          = module.service_vpc.cidr_block
+  sg_description          = "enphoto-dev-rds"
 }
